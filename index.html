@@ -1,0 +1,256 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Upload documenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#F2F4F7;--sf:#fff;--sf2:#F8FAFC;--ln:#E6E8EE;--ink:#111827;--ink2:#3F4A5A;--ink3:#6B7686;--ac:#0891B2;--acd:#0E7490;--acw:#ECFEFF;--gr:#15803D;--grw:#DCFCE7;--am:#B45309;--amw:#FEF3C7;--bl:#1D4ED8;--blw:#DBEAFE;--rd:#C2410C;--rdw:#FFF1EB;--vi:#6D4AE0;--viw:#F0ECFE}
+:root[data-tema="scuro"]{--bg:#0F141B;--sf:#161D27;--sf2:#131A23;--ln:#263243;--ink:#E6EBF2;--ink2:#CBD5E1;--ink3:#94A3B8;--ac:#22D3EE;--acd:#22D3EE;--acw:rgba(34,211,238,.1);--grw:rgba(52,211,153,.12);--gr:#34D399;--amw:rgba(245,158,11,.15);--am:#F59E0B;--blw:rgba(96,165,250,.14);--bl:#60A5FA;--rdw:rgba(251,146,60,.12);--rd:#FB923C;--viw:rgba(167,139,250,.14);--vi:#A78BFA}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);padding:22px 24px 40px;font-size:13px}
+button,input{font-family:inherit}
+.ph{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.ph h1{font-size:22px;font-weight:800;letter-spacing:-.02em}.ph p{font-size:12.5px;color:var(--ink3);margin-top:3px}
+.agg{font-size:11px;color:var(--ink3);border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:3px 10px;font-family:'JetBrains Mono',monospace}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ln);background:var(--sf);color:var(--ink2);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ac);color:var(--ac)}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#fff}:root[data-tema="scuro"] .btn.pri{color:#0B1A1A}
+.btn.ros{border-color:var(--rd);color:var(--rd);background:var(--sf)}.btn.ros:hover{background:var(--rdw)}
+.btn.gh{border-color:transparent;background:transparent;color:var(--ink3);padding-left:0}
+.btn:disabled{opacity:.55;cursor:default}
+.chiave{max-width:420px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:18px}.chiave p{font-size:13px;color:var(--ink3);margin-bottom:10px}.chiave form{display:flex;gap:8px}.chiave input{flex:1;border:1px solid var(--ln);border-radius:999px;padding:9px 14px;font-size:13px;background:var(--sf);color:var(--ink)}
+.toast{position:fixed;bottom:20px;right:20px;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:95;background:var(--sf);border:1px solid var(--ln);box-shadow:0 10px 30px rgba(16,24,40,.15)}.toast.ok{border-color:var(--gr);color:var(--gr)}.toast.err{border-color:var(--rd);color:var(--rd)}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+.c{background:var(--sf);border:1px solid var(--ln);border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.c>.hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--ln)}
+.c>.hd .i{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;background:var(--acw);color:var(--ac)}
+.c>.hd b{display:block;font-size:14px;font-weight:800}.c>.hd small{display:block;font-size:11.5px;color:var(--ink3);margin-top:1px}
+.c>.bd{padding:16px 18px}
+.c>.ft{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid var(--ln);background:var(--sf2)}
+.f{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+.campo{margin-bottom:14px}
+.cerca{position:relative}
+.cerca input{width:100%;border:1px solid var(--ln);border-radius:10px;padding:10px 36px 10px 12px;font-size:13.5px;background:var(--sf);color:var(--ink);font-weight:600}
+.cerca input:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 3px var(--acw)}
+.cerca .x{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--ink3);cursor:pointer;font-size:18px;line-height:1;padding:4px;display:none}
+.cerca.pieno .x{display:block}
+.lista{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--sf);border:1px solid var(--ln);border-radius:12px;box-shadow:0 14px 34px rgba(16,24,40,.16);max-height:320px;overflow:auto;z-index:20;display:none}
+.lista.on{display:block}
+.lista .v{padding:9px 12px;cursor:pointer;display:flex;gap:10px;align-items:baseline;border-bottom:1px solid var(--ln)}
+.lista .v:last-child{border-bottom:0}.lista .v:hover,.lista .v.att{background:var(--acw)}
+.lista .v b{font-size:13px;font-weight:700}.lista .v span{font-size:11.5px;color:var(--ink3)}.lista .v em{margin-left:auto;font-style:normal;font-size:11px;color:var(--ink3);white-space:nowrap}
+.lista .vuoto{padding:14px;color:var(--ink3);font-size:12.5px}
+.scheda{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:12px;color:var(--ink3);flex-wrap:wrap}
+.scheda b{color:var(--ink2)}
+.prat{display:grid;gap:8px}
+.prat label{display:flex;gap:10px;align-items:center;border:1.5px solid var(--ln);border-radius:11px;padding:9px 12px;cursor:pointer;font-size:12.5px;background:var(--sf)}
+.prat label:has(input:checked){border-color:var(--ac);background:var(--acw)}
+.prat input{accent-color:var(--ac)}.prat small{color:var(--ink3);margin-left:auto;white-space:nowrap}
+.cosa{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cosa label{display:flex;gap:11px;align-items:flex-start;border:1.5px solid var(--ln);border-radius:12px;padding:11px 12px;cursor:pointer;background:var(--sf);transition:border-color .15s,box-shadow .15s}
+.cosa label:hover{border-color:var(--ac)}
+.cosa input{position:absolute;opacity:0;pointer-events:none}
+.cosa .si{width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:var(--sf2);color:var(--ink3);flex:none}
+.cosa b{display:block;font-size:13px}.cosa small{display:block;font-size:11.5px;color:var(--ink3);margin-top:2px;line-height:1.4}
+.cosa label:has(input:checked){border-color:var(--ac);background:var(--acw);box-shadow:0 0 0 3px var(--acw)}
+.cosa label:has(input:checked) .si{background:var(--ac);color:#fff}
+.drop{margin-top:4px;border:2px dashed var(--ln);border-radius:14px;padding:26px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer;background:var(--sf2);transition:all .15s}
+.drop:hover,.drop.su{border-color:var(--ac);background:var(--acw)}
+.drop .q{width:42px;height:42px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:var(--acw);color:var(--ac)}
+.drop b{font-size:13.5px}.drop span{font-size:11.5px;color:var(--ink3)}
+.drop.spento{opacity:.5;pointer-events:none}
+.nota{margin-top:12px;display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:10px;font-size:12px;line-height:1.5}
+.nota.az{background:var(--acw);color:var(--ink2)}.nota.am{background:var(--amw);color:var(--am)}
+.nota b{flex:none}
+.btn.lg{padding:10px 18px;font-size:13px}
+.fl{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln)}
+.fl:last-child{border-bottom:0}
+.fl .q{width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font:800 9.5px 'JetBrains Mono',monospace}
+.fl .q.pdf{background:var(--rdw);color:var(--rd)}.fl .q.img{background:var(--blw);color:var(--bl)}.fl .q.zip{background:var(--viw);color:var(--vi)}
+.fl .nm{min-width:0}.fl .nm b{display:block;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl .nm span{font:500 11px 'JetBrains Mono',monospace;color:var(--ink3)}
+.st{font-size:11.5px;font-weight:700;white-space:nowrap}
+.st.pr{color:var(--gr)}.st.va{color:var(--ac)}.st.ko{color:#DC2626}.st.ok{color:var(--gr)}
+.barra{height:3px;border-radius:3px;background:var(--ln);margin-top:5px;overflow:hidden}.barra i{display:block;height:100%;background:var(--ac);width:0;transition:width .2s}
+.via{border:0;background:transparent;color:var(--ink3);cursor:pointer;font-size:17px;line-height:1;padding:2px 4px}.via:hover{color:#DC2626}
+.vuoto2{padding:28px 6px;text-align:center;color:var(--ink3);font-size:12.5px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}.cosa{grid-template-columns:1fr}}
+
+/* PORTALE NEXT-110: finestre a video del portale al posto degli avvisi del browser */
+.velo{position:fixed;inset:0;background:rgba(15,20,27,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:90}
+.fin{background:var(--sf,#fff);color:var(--ink,#111827);border:1px solid var(--ln,#E6E8EE);border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(16,24,40,.25);overflow:hidden;font-family:inherit}
+.fin .fh{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 8px}
+.fin .fh .fi{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:16px;font-weight:800}
+.fin .fh b{display:block;font-size:15px;font-weight:800}
+.fin .fm{padding:4px 20px 16px 66px;font-size:13.5px;line-height:1.55;color:var(--ink2,#3F4A5A)}
+.fin .fp{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--ln,#E6E8EE);background:var(--sf2,#F8FAFC)}
+.fin .fb{border:1px solid var(--ln,#E6E8EE);background:var(--sf,#fff);color:var(--ink2,#3F4A5A);border-radius:999px;padding:8px 16px;font:700 12.5px inherit;font-family:inherit;cursor:pointer}
+.fin .fb.si{background:var(--ac,#0891B2);border-color:var(--ac,#0891B2);color:#fff}
+.fin .fb.rosso{background:#DC2626;border-color:#DC2626;color:#fff}
+.fin .gira{width:16px;height:16px;border:2px solid var(--acw,#ECFEFF);border-top-color:var(--ac,#0891B2);border-radius:50%;animation:fgira .8s linear infinite;display:inline-block;vertical-align:-3px;margin-right:8px}
+@keyframes fgira{to{transform:rotate(360deg)}}
+
+</style></head><body>
+
+<div class="ph"><div><h1>Upload documenti</h1><p>Si sceglie il cliente, si trascinano i file: il sistema riconosce ogni documento e lo archivia nella sua pratica.</p></div><span class="agg" id="agg">--:--</span></div>
+<div class="grid">
+ <section class="c">
+  <div class="hd"><span class="i" data-ico="cartella"></span><div><b>Cliente e file</b><small>Niente manifest: il riconoscimento lo fa il sistema, come nell'area riservata.</small></div></div>
+  <div class="bd">
+   <div class="campo"><span class="f">Cliente</span>
+    <div class="cerca" id="cerca"><input id="qCli" type="text" autocomplete="off" placeholder="Cerca per cognome, nome o comune…" disabled><button class="x" id="xCli" type="button" title="Cambia cliente">×</button><div class="lista" id="lCli"></div></div>
+    <div class="scheda" id="sCli"></div>
+   </div>
+   <div class="campo" id="cPrat" style="display:none"><span class="f">Pratica</span><div class="prat" id="prat"></div></div>
+   <div class="campo"><span class="f">Cosa carichi</span>
+    <div class="cosa">
+     <label><input type="radio" name="cosa" value="cliente" checked><span class="si" data-ico="persona"></span><span><b>Documenti del cliente</b><small>Carta d'identità, tessera, bollette, visura, IBAN</small></span></label>
+     <label><input type="radio" name="cosa" value="impianto"><span class="si" data-ico="sole"></span><span><b>Foto e documenti dell'impianto</b><small>Foto del tetto e dei lavori, matricole, DiCo, schema</small></span></label>
+    </div>
+   </div>
+   <div class="drop spento" id="drop"><span class="q" data-ico="su"></span><b>Trascina i file qui oppure clicca per sceglierli</b><span id="dropHint">PDF, JPG, PNG · massimo 10 MB per file</span><input type="file" id="fi" multiple hidden></div>
+   <div class="nota az" id="nCosa"></div>
+  </div>
+  <div class="ft"><button class="btn gh" id="bSvuota" type="button">Svuota</button><span style="margin-left:auto"></span><button class="btn pri lg" id="bCarica" type="button" disabled><span data-ico="su"></span><span id="tCarica">Carica documenti</span></button></div>
+ </section>
+ <section class="c">
+  <div class="hd"><span class="i" data-ico="doc"></span><div><b id="tFile">File scelti</b><small>Si caricano così come sono: tipo, lato e nome li decide la lavorazione.</small></div></div>
+  <div class="bd" id="lista"><div class="vuoto2">Nessun file scelto</div></div>
+ </section>
+</div>
+<script>
+/* PORTALE NEXT-110: finestre a video (chiedi, avvisa, attendi) al posto di confirm/alert del browser */
+function fChiudi(){var v=document.getElementById('fVelo');if(v)v.remove();}
+function fEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function fApri(tipo,titolo,testoHtml,bottoni){fChiudi();var col={chiedi:['var(--acw,#ECFEFF)','var(--ac,#0891B2)','?'],ok:['var(--grw,#DCFCE7)','var(--gr,#16A34A)','✓'],attenzione:['var(--amw,#FEF3C7)','var(--am,#B45309)','!'],errore:['#FEE2E2','#DC2626','×'],attesa:['var(--acw,#ECFEFF)','var(--ac,#0891B2)','…']}[tipo]||['#eee','#333','·'];
+ var v=document.createElement('div');v.className='velo';v.id='fVelo';
+ v.innerHTML='<div class="fin" role="dialog" aria-modal="true"><div class="fh"><span class="fi" style="background:'+col[0]+';color:'+col[1]+'">'+col[2]+'</span><div><b>'+fEsc(titolo)+'</b></div></div><div class="fm">'+testoHtml+'</div>'+(bottoni&&bottoni.length?'<div class="fp">'+bottoni.map(function(b,i){return '<button class="fb '+(b[1]||'')+'" data-fb="'+i+'">'+fEsc(b[0])+'</button>';}).join('')+'</div>':'')+'</div>';
+ document.body.appendChild(v);
+ return new Promise(function(ok){v.addEventListener('click',function(e){var b=e.target.closest('[data-fb]');if(b){var i=+b.getAttribute('data-fb');fChiudi();ok(bottoni[i][2]);}else if(e.target===v&&tipo!=='attesa'){fChiudi();ok(null);}});
+  var s=v.querySelector('.fb.si,.fb.rosso');if(s)s.focus();});}
+function chiedi(titolo,testoHtml,si,rosso){return fApri('chiedi',titolo,testoHtml,[['Annulla','',false],[si||'Conferma',rosso?'rosso':'si',true]]);}
+function avvisa(tipo,titolo,testoHtml){return fApri(tipo,titolo,testoHtml,[['Chiudi','si',true]]);}
+function attendi(testo){fApri('attesa',testo||'Un momento…','<span class="gira"></span>'+fEsc(testo||'Sto lavorando…'),[]);}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var v=document.getElementById('fVelo');if(v&&!v.querySelector('.gira'))v.click();}});
+
+
+/* PORTALE NEXT-110: Upload documenti fuori da n8n (era GET /upload). Niente manifest: i file vanno nei provvisori e
+   da li nella lavorazione automatica (documenti del cliente) o nel riconoscimento WF-DOCS-AI-v2 (impianto). Funzione upload-ufficio. */
+
+var EF='https://pnxhthrheqeucoisifjw.supabase.co/functions/v1/upload-ufficio';
+var PASS='',CLI=[],SEL=null,PRAT=null,FILES=[],BUSY=false;
+var ICO={cartella:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',persona:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',sole:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',su:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/>',doc:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>'};
+function svg(k,n){n=n||16;return '<svg width="'+n+'" height="'+n+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICO[k]+'</svg>';}
+document.querySelectorAll('[data-ico]').forEach(function(e){e.innerHTML=svg(e.getAttribute('data-ico'),e.classList.contains('q')?20:16);});
+var esc=fEsc,$=function(i){return document.getElementById(i);};
+function data(s){if(!s)return '';var m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[3]+'/'+m[2]+'/'+m[1]:'';}
+function peso(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(0)+' KB':(b/1048576).toFixed(1).replace('.',',')+' MB';}
+function toast(m,ok){var t=$('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.className='toast '+(ok?'ok':'err');t.textContent=m;clearTimeout(window.__tt);window.__tt=setTimeout(function(){t.remove();},4000);}
+function cosa(){var r=document.querySelector('input[name=cosa]:checked');return r?r.value:'cliente';}
+function norm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
+
+function chiediPass(msg){$('lista').innerHTML='<div class="chiave"><p>'+(msg||'Inserisci la password della regia per caricare i documenti.')+'</p><form id="fp"><input id="ip" type="password" placeholder="Password" autocomplete="current-password"><button class="btn pri">Entra</button></form></div>';
+ $('fp').onsubmit=function(e){e.preventDefault();PASS=$('ip').value.trim();try{sessionStorage.setItem('regia_pass',PASS)}catch(x){}carica();};}
+async function carica(){if(!PASS){chiediPass();return;}
+ try{var r=await fetch(EF+'?t='+encodeURIComponent(PASS));var d=await r.json();
+  if(r.status===401){PASS='';try{sessionStorage.removeItem('regia_pass')}catch(x){}chiediPass('Password non valida, riprova.');return;}
+  if(!d.ok)throw new Error(d.errore||'errore');CLI=d.clienti||[];$('qCli').disabled=false;
+  $('agg').textContent=CLI.length+' clienti';disegnaFile();$('qCli').focus();}
+ catch(e){avvisa('errore','Elenco clienti non caricato',esc(e.message||e));}}
+
+/* --- cliente --- */
+var ATT=-1;
+function trovati(){var q=norm($('qCli').value).trim();var t=q.split(/\s+/).filter(Boolean);
+ return CLI.filter(function(c){var h=norm(c.nome+' '+(c.comune||'')+' '+(c.prov||'')+' '+(c.email||''));return t.every(function(w){return h.indexOf(w)>=0;});}).slice(0,40);}
+function apriLista(){var L=$('lCli'),v=trovati();ATT=-1;
+ L.innerHTML=v.length?v.map(function(c,i){var n=(c.pratiche||[]).length;return '<div class="v" data-id="'+c.id+'"><b>'+esc(c.nome)+'</b><span>'+esc(c.comune||'')+(c.prov?' ('+esc(c.prov)+')':'')+'</span><em>'+(n>1?n+' pratiche':'')+'</em></div>';}).join(''):'<div class="vuoto">Nessun cliente con questo nome.</div>';
+ L.classList.add('on');}
+function chiudiLista(){$('lCli').classList.remove('on');}
+function scegli(id){SEL=CLI.find(function(c){return c.id===id;})||null;chiudiLista();
+ if(!SEL)return;$('qCli').value=SEL.nome+(SEL.comune?' · '+SEL.comune+(SEL.prov?' ('+SEL.prov+')':''):'');$('cerca').classList.add('pieno');$('qCli').readOnly=true;
+ var P=SEL.pratiche||[];PRAT=P[0]?P[0].id:null;
+ $('prat').innerHTML=P.map(function(p,i){return '<label><input type="radio" name="prat" value="'+p.id+'"'+(i===0?' checked':'')+'><span><b>'+esc((p.prodotto||'pratica').replace(/_/g,' '))+'</b> · '+esc(p.via?p.via+', ':'')+esc(p.comune||'')+'</span><small>del '+data(p.creata)+' · '+(p.documenti||0)+' doc.</small></label>';}).join('');
+ $('cPrat').style.display=P.length>1?'':'none';
+ $('prat').onchange=function(e){if(e.target.name==='prat'){PRAT=e.target.value;scheda();}};
+ scheda();aggiorna();}
+function scheda(){if(!SEL){$('sCli').innerHTML='';return;}var p=(SEL.pratiche||[]).find(function(x){return x.id===PRAT;});
+ $('sCli').innerHTML=(p?'<span>In archivio <b>'+(p.documenti||0)+' documenti</b></span>':'<span style="color:#DC2626">Nessuna pratica collegata: non si può caricare</span>')+(SEL.ultimo?'<span>· ultimo caricamento <b>'+data(SEL.ultimo)+'</b></span>':'')+(SEL.email?'<span>· '+esc(SEL.email)+'</span>':'');}
+function libera(){if(BUSY)return;SEL=null;PRAT=null;$('qCli').readOnly=false;$('qCli').value='';$('cerca').classList.remove('pieno');$('cPrat').style.display='none';scheda();aggiorna();$('qCli').focus();apriLista();}
+$('qCli').addEventListener('focus',function(){if(!SEL)apriLista();});
+$('qCli').addEventListener('input',apriLista);
+$('qCli').addEventListener('keydown',function(e){var v=[].slice.call($('lCli').querySelectorAll('.v'));if(!v.length)return;
+ if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();ATT=Math.max(0,Math.min(v.length-1,ATT+(e.key==='ArrowDown'?1:-1)));v.forEach(function(x,i){x.classList.toggle('att',i===ATT);});v[ATT].scrollIntoView({block:'nearest'});}
+ else if(e.key==='Enter'){e.preventDefault();scegli((v[ATT]||v[0]).getAttribute('data-id'));}});
+$('lCli').addEventListener('mousedown',function(e){var v=e.target.closest('.v');if(v){e.preventDefault();scegli(v.getAttribute('data-id'));}});
+$('qCli').addEventListener('blur',function(){setTimeout(chiudiLista,120);});
+$('xCli').onclick=libera;
+
+/* --- cosa carico --- */
+var TESTO={cliente:'<b>Poi</b><span>La lavorazione automatica (ogni ora, dalle 8:15 alle 19:15) riconosce i documenti, ritaglia le tessere, li rinomina e li archivia nella pratica; aggiorna l\'anagrafica e manda al cliente la ricevuta con cosa è arrivato e cosa manca. A commerciale@ arriva il riepilogo.</span>',
+ impianto:'<b>Poi</b><span>Parte subito il riconoscimento delle foto, come dal portale installatori: fra qualche minuto ad ACQUISTI arriva la mail con la pagina di controllo, e in archivio entrano solo dopo <i>Approva</i>. All\'installatore non arriva niente.</span>'};
+function aggCosa(){$('nCosa').innerHTML=TESTO[cosa()];$('dropHint').textContent=cosa()==='impianto'?'Foto JPG o PNG, PDF, anche uno ZIP · massimo 25 MB per file':'PDF, JPG, PNG · massimo 10 MB per file';
+ $('fi').accept=cosa()==='impianto'?'.pdf,.jpg,.jpeg,.png,.zip':'.pdf,.jpg,.jpeg,.png';FILES.forEach(function(f){f.err=controlla(f.file);});disegnaFile();}
+document.querySelectorAll('input[name=cosa]').forEach(function(r){r.onchange=aggCosa;});
+
+/* --- file --- */
+function est(n){var p=String(n).split('.');return p.length>1?p.pop().toLowerCase():'';}
+function controlla(f){var e=est(f.name),imp=cosa()==='impianto';
+ if(e==='json')return 'il manifest non serve più';
+ var ok=imp?['pdf','jpg','jpeg','png','zip']:['pdf','jpg','jpeg','png'];if(ok.indexOf(e)<0)return 'formato non accettato';
+ var max=(imp?25:10)*1048576;if(f.size>max&&!(['jpg','jpeg','png'].indexOf(e)>=0&&!imp))return 'supera '+(imp?25:10)+' MB';
+ return '';}
+function aggiungi(lista){if(BUSY)return;[].forEach.call(lista,function(f){if(FILES.some(function(x){return x.file.name===f.name&&x.file.size===f.size;}))return;FILES.push({file:f,stato:'',pct:0,err:controlla(f)});});disegnaFile();}
+function disegnaFile(){var L=$('lista');if(!PASS&&!CLI.length&&L.querySelector('.chiave'))return;
+ var n=FILES.length;$('tFile').textContent='File scelti'+(n?' · '+n:'');
+ if(!n){L.innerHTML='<div class="vuoto2">Nessun file scelto</div>';aggiorna();return;}
+ L.innerHTML=FILES.map(function(x,i){var e=est(x.file.name),cl=e==='pdf'?'pdf':e==='zip'?'zip':'img';
+  var st=x.err?'<span class="st ko">'+esc(x.err)+'</span>':x.stato==='va'?'<span class="st va">'+x.pct+'%</span>':x.stato==='ok'?'<span class="st ok">✓ caricato</span>':x.stato==='ko'?'<span class="st ko">non caricato</span>':'<span class="st pr">pronto</span>';
+  return '<div class="fl"><span class="q '+cl+'">'+esc((e||'?').toUpperCase().slice(0,4))+'</span><span class="nm"><b title="'+esc(x.file.name)+'">'+esc(x.file.name)+'</b><span>'+peso(x.file.size)+'</span>'+(x.stato==='va'?'<div class="barra"><i style="width:'+x.pct+'%"></i></div>':'')+'</span>'+st+'<button class="via" data-via="'+i+'" title="Togli"'+(BUSY?' disabled':'')+'>×</button></div>';}).join('');
+ aggiorna();}
+$('lista').addEventListener('click',function(e){var b=e.target.closest('[data-via]');if(b&&!BUSY){FILES.splice(+b.getAttribute('data-via'),1);disegnaFile();}});
+function buoni(){return FILES.filter(function(x){return !x.err&&x.stato!=='ok';});}
+function aggiorna(){var p=!!(SEL&&PRAT),b=buoni().length;$('drop').classList.toggle('spento',!p||BUSY);
+ $('bCarica').disabled=!p||!b||BUSY;$('tCarica').textContent=BUSY?'Caricamento…':b?'Carica '+b+(b===1?' documento':' documenti'):'Carica documenti';}
+var D=$('drop');D.onclick=function(){$('fi').click();};
+$('fi').onchange=function(){aggiungi(this.files);this.value='';};
+['dragenter','dragover'].forEach(function(t){D.addEventListener(t,function(e){e.preventDefault();D.classList.add('su');});});
+['dragleave','drop'].forEach(function(t){D.addEventListener(t,function(e){e.preventDefault();D.classList.remove('su');});});
+D.addEventListener('drop',function(e){aggiungi(e.dataTransfer.files);});
+document.addEventListener('dragover',function(e){e.preventDefault();});document.addEventListener('drop',function(e){e.preventDefault();});
+$('bSvuota').onclick=function(){if(BUSY)return;FILES=[];disegnaFile();};
+
+/* le foto dei documenti del cliente si rimpiccioliscono qui, come nell'area riservata: lato lungo 2500 px */
+function rimpicciolisci(f){return new Promise(function(ok){var e=est(f.name);if(['jpg','jpeg','png'].indexOf(e)<0){ok(f);return;}
+ var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var w=im.naturalWidth,h=im.naturalHeight,m=Math.max(w,h);URL.revokeObjectURL(u);
+  if(m<=2500&&f.size<=10485760){ok(f);return;}var k=2500/m,c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+  c.toBlob(function(b){ok(b?new File([b],f.name.replace(/\.(png|jpe?g)$/i,'.jpg'),{type:'image/jpeg'}):f);},'image/jpeg',0.85);};im.onerror=function(){URL.revokeObjectURL(u);ok(f);};im.src=u;});}
+function metti(url,f,x){return new Promise(function(ok,ko){var q=new XMLHttpRequest();q.open('PUT',url);q.setRequestHeader('Content-Type',f.type||'application/octet-stream');q.setRequestHeader('x-upsert','false');
+ q.upload.onprogress=function(e){if(e.lengthComputable){x.pct=Math.round(e.loaded*100/e.total);disegnaFile();}};
+ q.onload=function(){q.status>=200&&q.status<300?ok():ko(new Error('HTTP '+q.status+' '+(q.responseText||'').slice(0,120)));};q.onerror=function(){ko(new Error('rete'));};q.send(f);});}
+async function post(c){var r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({t:PASS},c))});var d=await r.json().catch(function(){return {};});if(!r.ok||!d.ok)throw new Error(d.errore||('HTTP '+r.status));return d;}
+
+$('bCarica').onclick=async function(){var da=buoni();if(!SEL||!PRAT||!da.length)return;var tipo=cosa();
+ var prat=(SEL.pratiche||[]).find(function(p){return p.id===PRAT;})||{};
+ var dove=(prat.prodotto||'pratica').replace(/_/g,' ')+(prat.comune?' di '+prat.comune:'');
+ if(!await chiedi('Carico '+da.length+(da.length===1?' file':' file')+' per '+SEL.nome+'?','Vanno nella pratica <b>'+esc(dove)+'</b> come <b>'+(tipo==='impianto'?'foto e documenti dell\'impianto':'documenti del cliente')+'</b>.<br><br><span style="color:var(--ink3)">'+$('nCosa').querySelector('span').innerHTML+'</span>','Carica'))return;
+ BUSY=true;aggiorna();disegnaFile();var fatti=0,lotto=null;
+ try{var pr=await post({azione:'prepara',client_id:SEL.id,practice_id:PRAT,nomi:da.map(function(x){return x.file.name;})});lotto=pr.lotto;
+  for(var i=0;i<da.length;i++){var x=da[i],dest=pr.file[i];x.stato='va';x.pct=0;disegnaFile();
+   try{var f=tipo==='cliente'?await rimpicciolisci(x.file):x.file;await metti(dest.scrivi_su,f,x);x.stato='ok';fatti++;}catch(e){x.stato='ko';x.msg=e.message;}
+   disegnaFile();}
+  if(!fatti)throw new Error('nessun file è arrivato: riprova');
+  var ch=await post({azione:'chiudi',practice_id:PRAT,lotto:lotto,tipo:tipo,quanti:fatti});
+  BUSY=false;aggiorna();disegnaFile();var ko=da.length-fatti;
+  await avvisa(ko?'attenzione':'ok',(ko?fatti+' file caricati, '+ko+' no':'Documenti caricati'),
+   (tipo==='impianto'?'Il riconoscimento delle foto è partito. Fra qualche minuto arriva ad ACQUISTI la mail con la pagina di controllo: da lì si approva e i file entrano in archivio.':'I file sono in coda per la lavorazione automatica'+(ch.coda&&ch.coda.stato?' ('+esc(String(ch.coda.stato).replace('_',' '))+')':'')+'. Alla prossima corsa vengono riconosciuti e archiviati, e al cliente parte la ricevuta.')+(ko?'<br><br>Quelli segnati «non caricato» sono rimasti qui: puoi riprovare con lo stesso tasto.':'')+'<br><br><span style="color:var(--ink3);font:500 11px \'JetBrains Mono\',monospace">lotto '+esc(lotto)+'</span>');
+  FILES=FILES.filter(function(x){return x.stato!=='ok';});SEL.ultimo=new Date().toISOString();disegnaFile();scheda();}
+ catch(e){BUSY=false;aggiorna();disegnaFile();avvisa('errore','Caricamento non riuscito',esc(e.message||e)+(fatti&&lotto?'<br><br>'+fatti+' file sono già nei provvisori (lotto '+esc(lotto)+') ma non sono stati messi in lavorazione: avvisa chi segue il portale.':''));}};
+
+window.addEventListener('message',function(e){var d=e.data||{};
+ if(d.tipo==='tema'&&(d.tema==='chiaro'||d.tema==='scuro'))document.documentElement.setAttribute('data-tema',d.tema);
+ if(d.tipo==='pass'&&d.pass&&!PASS){PASS=d.pass;carica();}});
+window.addEventListener('beforeunload',function(e){if(BUSY){e.preventDefault();e.returnValue='';}});
+try{PASS=sessionStorage.getItem('regia_pass')||'';}catch(e){}
+try{var t=window.parent.document.documentElement.getAttribute('data-tema');if(t)document.documentElement.setAttribute('data-tema',t);}catch(e){}
+aggCosa();
+if(PASS)carica();else{try{window.parent.postMessage({tipo:'chiedi_pass'},'*');}catch(e){}setTimeout(function(){if(!PASS)chiediPass();},700);}
+</script></body></html>
